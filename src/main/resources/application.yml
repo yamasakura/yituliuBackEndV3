@@ -13,9 +13,10 @@ spring:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+
 filePath:
-  penguin: "E:\\Idea_Project\\demo\\src\\main\\resources\\penguin\\"
-  item: "E:\\Idea_Project\\demo\\src\\main\\resources\\item\\"
+  penguin: "E:\\Idea_Project\\yituliuBackEndV3\\src\\main\\resources\\penguin\\"
+  item: "E:\\Idea_Project\\yituliuBackEndV3\\src\\main\\resources\\item\\"
 
 
 

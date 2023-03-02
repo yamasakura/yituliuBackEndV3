@@ -18,13 +18,15 @@ public class Item {
 
     private Double itemValue; //物品价值
 
-    private String type; //物品稀有度
+    private String  type; //物品稀有度
+
+    private Integer rarity; //物品稀有度
 
     private Integer cardNum;  //前端排序的用索引
 
     private Double expCoefficient;  //经验书系数
 
-    private Double workShopKnockRating;
+    private Double weight;   //加工站爆率
 
     public Long getId() {
         return id;
@@ -66,6 +68,14 @@ public class Item {
         this.type = type;
     }
 
+    public Integer getRarity() {
+        return rarity;
+    }
+
+    public void setRarity(Integer rarity) {
+        this.rarity = rarity;
+    }
+
     public Integer getCardNum() {
         return cardNum;
     }
@@ -82,24 +92,26 @@ public class Item {
         this.expCoefficient = expCoefficient;
     }
 
-    public Double getWorkShopKnockRating() {
-        return workShopKnockRating;
+    public Double getWeight() {
+        return weight;
     }
 
-    public void setWorkShopKnockRating(Double workShopKnockRating) {
-        this.workShopKnockRating = workShopKnockRating;
+    public void setWeight(Double weight) {
+        this.weight = weight;
     }
 
     @Override
     public String toString() {
-        return "ItemRevise{" +
+        return "Item{" +
                 "id=" + id +
                 ", itemId='" + itemId + '\'' +
                 ", itemName='" + itemName + '\'' +
                 ", itemValue=" + itemValue +
                 ", type='" + type + '\'' +
+                ", rarity=" + rarity +
                 ", cardNum=" + cardNum +
                 ", expCoefficient=" + expCoefficient +
+                ", weight=" + weight +
                 '}';
     }
 }

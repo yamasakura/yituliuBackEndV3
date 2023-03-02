@@ -5,29 +5,27 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 
-@TableName("efficiency_result")
-public class EfficiencyResult implements Serializable {
+@TableName("stage_result")
+public class StageResult implements Serializable {
 
     @TableId
     private Long id;
     private String stageId;  // 关卡id
-    private Integer sampleSize;  // 样本次数
-    private String itemId;   //产物ID
-    private String itemName;    //产物名称
     private String stageCode;   // 关卡名称
-    private Double knockRating;   // 概率
-    private Double result;   // 单项结果
-    private Double apExpect; // 期望理智
-    private String main; // 主产物
-    private Integer mainLevel; // 主产物
-    private String itemType;  //材料类型
-    private String secondary; // 副产物
-    private Double apCost;  //理智消耗
     private Integer isShow;   // 是否显示
     private Integer isValue;  //是否参与定价
+    private Double apCost;  //理智消耗
+    private String main; // 主材料
+    private String secondary; // 副材料
+    private String itemId;   //材料ID
+    private String itemName;    //材料名称
+    private String itemType;  //材料类型
+    private Integer sampleSize;  // 样本次数
+    private Double knockRating;   // 概率
+    private Double apExpect; // 期望理智
+    private Double result;   // 单项结果
     private Double stageEfficiency;    //理智转化率
-
-    private Integer stageColor;
+    private Integer stageColor;   //关卡在前端显示的颜色
 
 
     public Long getId() {
@@ -110,14 +108,6 @@ public class EfficiencyResult implements Serializable {
         this.main = main;
     }
 
-    public Integer getMainLevel() {
-        return mainLevel;
-    }
-
-    public void setMainLevel(Integer mainLevel) {
-        this.mainLevel = mainLevel;
-    }
-
     public String getItemType() {
         return itemType;
     }
@@ -174,6 +164,11 @@ public class EfficiencyResult implements Serializable {
         this.stageColor = stageColor;
     }
 
+
+    public StageResult() {
+    }
+
+
     @Override
     public String toString() {
         return "EfficiencyResult{" +
@@ -187,13 +182,13 @@ public class EfficiencyResult implements Serializable {
                 ", result=" + result +
                 ", apExpect=" + apExpect +
                 ", main='" + main + '\'' +
-                ", mainLevel=" + mainLevel +
                 ", itemType='" + itemType + '\'' +
                 ", secondary='" + secondary + '\'' +
                 ", apCost=" + apCost +
                 ", isShow=" + isShow +
                 ", isValue=" + isValue +
                 ", stageEfficiency=" + stageEfficiency +
+                ", stageColor=" + stageColor +
                 '}';
     }
 }

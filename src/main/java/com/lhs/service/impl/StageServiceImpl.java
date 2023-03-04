@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lhs.common.config.FileConfig;
 import com.lhs.common.util.FileUtil;
@@ -12,6 +13,7 @@ import com.lhs.mapper.StageMapper;
 import com.lhs.model.entity.Item;
 import com.lhs.model.entity.Stage;
 import com.lhs.model.entity.StageResult;
+import com.lhs.model.vo.PenguinDataResponseVo;
 import com.lhs.service.StageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,16 @@ public class StageServiceImpl extends ServiceImpl<StageMapper, Stage> implements
 
     @Autowired
     private StageMapper stageMapper;
+
+
+    @Override
+    public List<Stage> findAll() {
+        QueryWrapper<Stage> queryWrapper = new QueryWrapper<>();
+        queryWrapper.notLike("stage_id", "tough");
+        List<Stage> stages = stageMapper.selectList(queryWrapper);
+//        System.out.println(stages.size());
+        return stages;
+    }
 
     @Override
     @Transactional
@@ -50,11 +61,12 @@ public class StageServiceImpl extends ServiceImpl<StageMapper, Stage> implements
                 @Override
                 public void invoke(Stage stage, AnalysisContext analysisContext) {
                     try {
-                        if( !"0".equals(stage.getMain()))  stage.setMainRarity(itemMap.get(stage.getMain()).getRarity());
-                        if( !"0".equals(stage.getMain()))  stage.setItemType(itemType_table.getString(stage.getMain()));
+                        if (!"0".equals(stage.getMain())) stage.setMainRarity(itemMap.get(stage.getMain()).getRarity());
+                        if (!"0".equals(stage.getMain())) stage.setItemType(itemType_table.getString(stage.getMain()));
                         stage.setZoneName(stageZone_table.getString(stage.getZoneId()));
                         stage.setSpm(stage.getApCost() / stage.getMinClearTime() * 60000);
-                        if( !"0".equals(stage.getSecondary()))  stage.setSecondaryId(itemMap.get(stage.getSecondary()).getItemId());
+                        if (!"0".equals(stage.getSecondary()))
+                            stage.setSecondaryId(itemMap.get(stage.getSecondary()).getItemId());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -95,7 +107,7 @@ public class StageServiceImpl extends ServiceImpl<StageMapper, Stage> implements
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             String fileName = URLEncoder.encode("stage", "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename="+ fileName+".xlsx" );
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
 
             List<Stage> list = stageMapper.selectList(null);
 
@@ -109,6 +121,9 @@ public class StageServiceImpl extends ServiceImpl<StageMapper, Stage> implements
     public void updateStageInfo(String stageId) {
 
     }
+
+
+
 
     //复制材料表和关卡表的一些信息
     private static void stageResultVo(StageResult efficiencyResult, Stage stage, Item item) {

@@ -25,7 +25,7 @@ public class Swagger2Config {
 	@Bean
 	public Docket WebApiConfig() {
 		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("WebApi")
+				.groupName("1WebApi")
 				//设置基本信息
 				.apiInfo(apiInfo())
 				//初始化并返回一个API选择构造器

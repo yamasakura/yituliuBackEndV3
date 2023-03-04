@@ -84,6 +84,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper,Item> implements Ite
             throw new RuntimeException(e);
         }
 
+
         updateBatchById(items);
 
         saveByProductValue(items);  //保存Vn+1的加工站副产物平均产出价值

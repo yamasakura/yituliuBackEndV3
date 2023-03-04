@@ -12,11 +12,18 @@ public class StageResult implements Serializable {
     private Long id;
     private String stageId;  // 关卡id
     private String stageCode;   // 关卡名称
+    private Double sampleConfidence; //置信度
+    private Double spm;  //每分钟消耗理智
+    private String zoneName;  //章节名称
+
+    private String zoneId;  //区域Id
     private Integer isShow;   // 是否显示
     private Integer isValue;  //是否参与定价
     private Double apCost;  //理智消耗
     private String main; // 主材料
     private String secondary; // 副材料
+
+    private String secondaryId; // 副材料id
     private String itemId;   //材料ID
     private String itemName;    //材料名称
     private String itemType;  //材料类型
@@ -26,6 +33,8 @@ public class StageResult implements Serializable {
     private Double result;   // 单项结果
     private Double stageEfficiency;    //理智转化率
     private Integer stageColor;   //关卡在前端显示的颜色
+
+
 
 
     public Long getId() {
@@ -124,6 +133,14 @@ public class StageResult implements Serializable {
         this.secondary = secondary;
     }
 
+    public String getSecondaryId() {
+        return secondaryId;
+    }
+
+    public void setSecondaryId(String secondaryId) {
+        this.secondaryId = secondaryId;
+    }
+
     public Double getApCost() {
         return apCost;
     }
@@ -164,6 +181,37 @@ public class StageResult implements Serializable {
         this.stageColor = stageColor;
     }
 
+    public Double getSpm() {
+        return spm;
+    }
+
+    public void setSpm(Double spm) {
+        this.spm = spm;
+    }
+
+    public String getZoneName() {
+        return zoneName;
+    }
+
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
+    }
+
+    public Double getSampleConfidence() {
+        return sampleConfidence;
+    }
+
+    public void setSampleConfidence(Double sampleConfidence) {
+        this.sampleConfidence = sampleConfidence;
+    }
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
+    }
 
     public StageResult() {
     }
@@ -171,22 +219,27 @@ public class StageResult implements Serializable {
 
     @Override
     public String toString() {
-        return "EfficiencyResult{" +
+        return "StageResult{" +
                 "id=" + id +
                 ", stageId='" + stageId + '\'' +
-                ", sampleSize=" + sampleSize +
-                ", itemId='" + itemId + '\'' +
-                ", itemName='" + itemName + '\'' +
                 ", stageCode='" + stageCode + '\'' +
-                ", knockRating=" + knockRating +
-                ", result=" + result +
-                ", apExpect=" + apExpect +
-                ", main='" + main + '\'' +
-                ", itemType='" + itemType + '\'' +
-                ", secondary='" + secondary + '\'' +
-                ", apCost=" + apCost +
+                ", sampleConfidence=" + sampleConfidence +
+                ", spm=" + spm +
+                ", zoneName='" + zoneName + '\'' +
+                ", zoneId='" + zoneId + '\'' +
                 ", isShow=" + isShow +
                 ", isValue=" + isValue +
+                ", apCost=" + apCost +
+                ", main='" + main + '\'' +
+                ", secondary='" + secondary + '\'' +
+                ", secondaryId='" + secondaryId + '\'' +
+                ", itemId='" + itemId + '\'' +
+                ", itemName='" + itemName + '\'' +
+                ", itemType='" + itemType + '\'' +
+                ", sampleSize=" + sampleSize +
+                ", knockRating=" + knockRating +
+                ", apExpect=" + apExpect +
+                ", result=" + result +
                 ", stageEfficiency=" + stageEfficiency +
                 ", stageColor=" + stageColor +
                 '}';

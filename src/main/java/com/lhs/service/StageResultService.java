@@ -6,6 +6,7 @@ import com.lhs.model.entity.Item;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public interface StageResultService extends IService<StageResult> {
@@ -15,4 +16,7 @@ public interface StageResultService extends IService<StageResult> {
     List<List<StageResult>> getResultDataByItemType();
 
 
+    Map<String,List<StageResult>> getResultDataByClosed();
+
+    List<List<StageResult>> getResultDataByApExpect();
 }

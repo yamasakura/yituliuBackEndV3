@@ -39,12 +39,8 @@ public class StageServiceImpl extends ServiceImpl<StageMapper, Stage> implements
 
 
     @Override
-    public List<Stage> findAll() {
-        QueryWrapper<Stage> queryWrapper = new QueryWrapper<>();
-        queryWrapper.notLike("stage_id", "tough");
-        List<Stage> stages = stageMapper.selectList(queryWrapper);
-//        System.out.println(stages.size());
-        return stages;
+    public List<Stage> findAll(QueryWrapper<Stage> queryWrapper) {
+        return stageMapper.selectList(queryWrapper);
     }
 
     @Override

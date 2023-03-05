@@ -10,7 +10,6 @@ import com.lhs.common.exception.ServiceException;
 import com.lhs.common.util.ResultCode;
 import com.lhs.mapper.StageResultMapper;
 import com.lhs.common.util.FileUtil;
-import com.lhs.mapper.StageMapper;
 import com.lhs.model.entity.StageResult;
 import com.lhs.common.config.FileConfig;
 import com.lhs.model.entity.Item;
@@ -18,6 +17,7 @@ import com.lhs.model.entity.Stage;
 import com.lhs.model.vo.PenguinDataResponseVo;
 import com.lhs.service.StageResultService;
 import com.lhs.service.StageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-
+@Slf4j
 public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, StageResult> implements StageResultService {
 
     @Autowired
@@ -47,7 +47,7 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
         List<PenguinDataResponseVo> penguinDataResponseVos = JSONArray.parseArray(JSONObject.parseObject(response).getString("matrix"), PenguinDataResponseVo.class);//将企鹅物流文件的内容转为集合
         penguinDataResponseVos = mergePenguinData(penguinDataResponseVos);  //合并企鹅物流的标准和磨难关卡的样本
         Map<String, Item> itemValueMap = items.stream().collect(Collectors.toMap(Item::getItemId, Function.identity())); //将item表的各项信息转为Map  <itemId,Item类 >
-        Map<String, Stage> stageInfoMap = stageService.findAll().stream().collect(Collectors.toMap(Stage::getStageId, Function.identity()));  //将stage的各项信息转为Map <stageId,stage类 >
+        Map<String, Stage> stageInfoMap = stageService.findAll(new QueryWrapper<Stage>().notLike("stage_id", "tough")).stream().collect(Collectors.toMap(Stage::getStageId, Function.identity()));  //将stage的各项信息转为Map <stageId,stage类 >
 
 
 //      过滤掉（该条记录的样本低于300 & 该条记录的掉落材料不存在于材料表中 & 该条记录的关卡ID不存在于关卡表中）的数据
@@ -88,7 +88,7 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
             stageResult.setItemId(item.getItemId());
             stageResult.setItemName(item.getItemName());
             stageResult.setKnockRating(knockRating);
-            stageResult.setApExpect(stage.getApCost() / knockRating);
+            if (knockRating > 0) stageResult.setApExpect(stage.getApCost() / knockRating);
             stageResult.setResult(item.getItemValue() * knockRating);
 
             stageResult.setStageColor(2);
@@ -158,11 +158,8 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
     @Override
     public List<List<StageResult>> getResultDataByItemType() {
         QueryWrapper<StageResult> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_show", 1)
-                .ge("stage_efficiency", 1.0)
-                .ne("item_type", "0")
-                .isNotNull("item_type")
-                .orderByDesc("stage_efficiency");
+        queryWrapper.eq("is_show", 1).ge("stage_efficiency", 1.0).ne("item_type", "0")
+                .isNotNull("item_type").orderByDesc("stage_efficiency");
         List<List<StageResult>> collectList = new ArrayList<>();
         List<StageResult> stageResultList = stageResultMapper.selectList(queryWrapper);
         stageResultList.forEach(stageResult -> stageResult.setStageEfficiency(stageResult.getStageEfficiency() / 1.25 * 100));
@@ -179,11 +176,8 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
     @Override
     public Map<String, List<StageResult>> getResultDataByClosed() {
         QueryWrapper<StageResult> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_show", 0)
-                .ge("stage_efficiency", 1.1)
-                .isNotNull("item_type")
-                .ne("item_type", "0")
-                .orderByDesc("stage_id");
+        queryWrapper.eq("is_show", 0).ge("stage_efficiency", 1.1).isNotNull("item_type")
+                .ne("item_type", "0").orderByDesc("stage_id");
         List<StageResult> stageResultList = stageResultMapper.selectList(queryWrapper);
         stageResultList.forEach(stageResult -> stageResult.setStageEfficiency(stageResult.getStageEfficiency() / 1.25 * 100));
         Map<String, List<StageResult>> collect = stageResultList.stream().collect(Collectors.groupingBy(StageResult::getZoneName));
@@ -199,12 +193,9 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
         List<List<StageResult>> result = new ArrayList<>();
         itemList.forEach(item ->
                 result.add(stageResultMapper.selectList(
-                        new QueryWrapper<StageResult>().eq("is_show", 1)  //当前正在开放的关卡
-                                .eq("item_name", item)  //根据材料名称
-                                .le("ap_expect", 50)
-                                .orderByAsc("ap_expect")))
+                        new QueryWrapper<StageResult>().eq("is_show", 1).eq("item_name", item)
+                                .le("ap_expect", 50).orderByAsc("ap_expect")))
         );
-
 
         if (result.size() < 6) throw new ServiceException(ResultCode.DATA_WRONG);
 
@@ -212,7 +203,7 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
     }
 
     public List<PenguinDataResponseVo> mergePenguinData(List<PenguinDataResponseVo> stageList) {
-        Map<String, List<PenguinDataResponseVo>> groupByZoneMap = new HashMap();
+        HashMap<String, List<PenguinDataResponseVo>> groupByZoneMap = new HashMap<>();
         List<String> zoneList = Arrays.asList("main_10", "tough_10", "main_11", "tough_11");
         zoneList.forEach(zone -> groupByZoneMap.put(zone, new ArrayList<>()));
         zoneList.forEach(zone -> stageList.forEach(stage -> {
@@ -227,14 +218,12 @@ public class StageResultServiceImpl extends ServiceImpl<StageResultMapper, Stage
 
 
     private static void mergeMainAndTough(List<PenguinDataResponseVo> mainList, List<PenguinDataResponseVo> toughList) {
-        mainList.forEach(main -> {
-            toughList.forEach(tough -> {     //将标准和磨难相同关卡下相同材料的记录进行合并
-                if (main.getStageId().equals(tough.getStageId()) && main.getItemId().equals(tough.getItemId())) {
-                    main.setTimes(main.getTimes() + tough.getTimes());
-                    main.setQuantity(main.getQuantity() + tough.getQuantity());
-                }
-            });
-        });
+        mainList.forEach(main -> toughList.forEach(tough -> {     //将标准和磨难相同关卡下相同材料的记录进行合并
+            if (main.getStageId().equals(tough.getStageId()) && main.getItemId().equals(tough.getItemId())) {
+                main.setTimes(main.getTimes() + tough.getTimes());
+                main.setQuantity(main.getQuantity() + tough.getQuantity());
+            }
+        }));
     }
 
 }

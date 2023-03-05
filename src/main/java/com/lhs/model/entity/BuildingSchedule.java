@@ -3,11 +3,12 @@ package com.lhs.model.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-
+@Data
 @TableName("building_schedule")//基建表
 public class BuildingSchedule {
 
